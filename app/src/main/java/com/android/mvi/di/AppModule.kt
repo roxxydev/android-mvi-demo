@@ -12,7 +12,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSomeString(): String {
-        return "It's some string!~"
+    fun provideLogTag(): String {
+        return "AppLog"
     }
 }

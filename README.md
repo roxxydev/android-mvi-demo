@@ -8,3 +8,5 @@
 * [Hilt](https://dagger.dev/hilt/) - For dependency injection
 * [Room](https://developer.android.com/jetpack/androidx/releases/room) - Data caching mechanism
 * [Retrofit](https://square.github.io/retrofit/) - API http network requests
+
+*Navigation Component and Recyclerview are implement in branch [navigation-component](https://github.com/roxxydev/android-mvi-demo/tree/navigation-component)*

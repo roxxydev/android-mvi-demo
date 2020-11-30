@@ -1,4 +1,4 @@
-package com.android.mvi.presentation
+package com.android.mvi.presentation.viewmodel
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
