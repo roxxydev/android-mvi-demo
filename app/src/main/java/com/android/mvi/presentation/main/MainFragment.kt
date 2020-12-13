@@ -1,7 +1,6 @@
-package com.android.mvi.presentation
+package com.android.mvi.presentation.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -10,18 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.mvi.R
 import com.android.mvi.domain.model.Character
 import com.android.mvi.domain.state.DataState
+import com.android.mvi.presentation.UiUtil
 import com.android.mvi.presentation.adapter.CharacterRecyclerAdapter
-import com.android.mvi.presentation.viewmodel.MainStateEvent
-import com.android.mvi.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_main.*
 
-
 @AndroidEntryPoint
-class MainFragment
-constructor(
-    private val logTag: String
-): Fragment(R.layout.fragment_main) {
+class MainFragment: Fragment(R.layout.fragment_main) {
 
     private val viewModel: MainViewModel by  viewModels()
     private lateinit var characterRecyclerAdapter: CharacterRecyclerAdapter
@@ -31,22 +25,41 @@ constructor(
 
         initRecyclerview()
         subscribeObservers()
-        viewModel.setStateEvent(MainStateEvent.GetCharacterEvents)
+        viewModel.setStateEvent(MainIntent.GetCharactersIntent)
     }
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             when(dataState) {
-                is DataState.Success<List<Character>> -> {
+
+                is DataState.SUCCESS<MainDataState> -> {
                     displayProgressBar(false)
-                    characterRecyclerAdapter.submitList(dataState.data)
+
+                    dataState.data?.let { it ->
+                        when {
+                            it.characters.isEmpty() -> {
+                                val toastMsg = getString(R.string.empty_results)
+                                UiUtil.displayToast(requireContext(), toastMsg)
+                            }
+                            it.characters.isNotEmpty() -> {
+                                updateList(it.characters)
+                            }
+                            it.cacheCharacters.isNotEmpty() -> {
+                                updateList(it.cacheCharacters)
+                            }
+                        }
+                    }
                 }
-                is DataState.Error -> {
-                    displayProgressBar(false)
-                    Log.e(logTag, dataState.exception.message)
+
+                is DataState.LOADING -> {
+                    displayProgressBar(dataState.loading)
                 }
-                is DataState.Loading -> {
-                    displayProgressBar(true)
+
+                is DataState.ERROR -> {
+                    displayProgressBar(dataState.loading)
+                    dataState.stateMessage?.message?.let {
+                        UiUtil.displayToast(requireContext(), it)
+                    }
                 }
             }
         })
@@ -58,6 +71,12 @@ constructor(
         }
         else {
             progress_bar.visibility = View.GONE
+        }
+    }
+
+    private fun updateList(characters: List<Character>?) {
+        characters?.let {
+            characterRecyclerAdapter.submitList(it)
         }
     }
 

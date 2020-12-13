@@ -9,13 +9,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.mvi.R
 import com.android.mvi.domain.model.Character
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import com.android.mvi.presentation.UiUtil
 import kotlinx.android.synthetic.main.character_list_item.view.*
 
 class CharacterRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items: List<Character> = ArrayList()
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return CharacterViewHolder(
@@ -25,11 +28,22 @@ class CharacterRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
-
             is CharacterViewHolder -> {
-                holder.bind(items.get(position))
+                holder.bind(items[position])
             }
         }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemCount(): Int {
+        return items.size
     }
 
     fun submitList(characterList: List<Character>) {
@@ -37,30 +51,19 @@ class CharacterRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() 
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
-
     class CharacterViewHolder constructor(
         itemView: View
     ): RecyclerView.ViewHolder(itemView) {
 
-        val characterImage: ImageView = itemView.character_image
-        val characterName: TextView = itemView.character_name
-        val characterDescription: TextView = itemView.character_description
+        private val imageView: ImageView = itemView.character_image
+        private val tvName: TextView = itemView.character_name
+        private val tvDesc: TextView = itemView.character_description
 
         fun bind(character: Character) {
-            characterName.text = character.title
-            characterDescription.text = character.body
+            tvName.text = character.title
+            tvDesc.text = character.body
 
-            val requestOptions = RequestOptions()
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_foreground)
-
-            Glide.with(itemView.context)
-                .applyDefaultRequestOptions(requestOptions)
-                .load(character.image)
-                .into(characterImage)
+            UiUtil.displayImage(itemView.context, character.image, imageView)
         }
     }
 

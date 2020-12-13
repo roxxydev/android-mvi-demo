@@ -1,4 +1,4 @@
-package com.android.mvi.datasource.cache.model
+package com.android.mvi.datasource.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -22,4 +22,4 @@ data class EntityCacheCharacter (
 
     @ColumnInfo(name = "image")
     var image: String
-) : EntityCache
+) : EntityModel

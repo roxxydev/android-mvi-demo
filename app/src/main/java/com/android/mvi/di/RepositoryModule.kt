@@ -1,14 +1,15 @@
 package com.android.mvi.di
 
-import com.android.mvi.datasource.cache.database.DaoCharacter
-import com.android.mvi.datasource.cache.mapper.CacheMapper
-import com.android.mvi.datasource.network.mapper.NetworkMapper
-import com.android.mvi.datasource.network.retrofit.ApiServiceRetrofit
+import android.content.Context
+import com.android.mvi.datasource.cache.DaoCharacter
+import com.android.mvi.datasource.mapper.CharacterMapper
+import com.android.mvi.datasource.network.ApiServiceRetrofit
 import com.android.mvi.repository.MainRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @InstallIn(ApplicationComponent::class)
@@ -18,11 +19,11 @@ class RepositoryModule {
     @Singleton
     @Provides
     fun provideRepository(
+        @ApplicationContext appContext: Context,
         daoCharacter: DaoCharacter,
         retrofit: ApiServiceRetrofit,
-        cacheMapper: CacheMapper,
-        networkMapper: NetworkMapper
+        characterMapper: CharacterMapper
     ): MainRepository {
-        return MainRepository(daoCharacter, retrofit, cacheMapper, networkMapper)
+        return MainRepository(appContext, daoCharacter, retrofit, characterMapper)
     }
 }
