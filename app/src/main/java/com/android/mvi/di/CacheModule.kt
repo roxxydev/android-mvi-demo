@@ -2,8 +2,8 @@ package com.android.mvi.di
 
 import android.content.Context
 import androidx.room.Room
-import com.android.mvi.datasource.cache.database.DaoCharacter
-import com.android.mvi.datasource.cache.database.Database
+import com.android.mvi.datasource.cache.DaoCharacter
+import com.android.mvi.datasource.cache.Database
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

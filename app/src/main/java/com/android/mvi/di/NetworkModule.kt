@@ -1,15 +1,17 @@
 package com.android.mvi.di
 
+import android.util.Log
 import com.android.mvi.BuildConfig
-import com.android.mvi.datasource.network.retrofit.ApiServiceRetrofit
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.android.mvi.datasource.network.ApiServiceRetrofit
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
+import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -18,18 +20,54 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providesGsonBuilder(): Gson {
-        return GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create()
+    fun providesTimberTree(): Timber.Tree {
+        class ReportingTree : Timber.Tree() {
+            override fun log(
+                priority: Int,
+                tag: String?,
+                message: String,
+                throwable: Throwable?
+            ) {
+                if (priority == Log.VERBOSE || priority == Log.DEBUG) {
+                    return
+                }
+                // val t = throwable ?: Exception(message)
+                // Pass the exception variable t to crash reporting service
+            }
+        }
+
+        return when(BuildConfig.DEBUG) {
+            true -> Timber.DebugTree()
+            else -> ReportingTree()
+        }
     }
 
     @Singleton
     @Provides
-    fun provideRetrofitBuilder(gson: Gson): Retrofit.Builder {
+    fun providesOkHttpClient(): OkHttpClient {
+        val logger = object: HttpLoggingInterceptor.Logger {
+            override fun log(message: String) {
+                Timber.tag("HTTP").d(message)
+            }
+        }
+
+        val logging = HttpLoggingInterceptor(logger)
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build();
+
+        return okHttpClient
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofitBuilder(okHttpClient: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
+            .client(okHttpClient)
             .baseUrl(BuildConfig.API_HOST)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(MoshiConverterFactory.create())
     }
 
     @Singleton

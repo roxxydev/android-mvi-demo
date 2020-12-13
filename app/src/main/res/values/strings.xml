@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MVI Demo</string>
+
+    <string name="error_network">
+        No internet connection. Check your connection and try again.
+    </string>
+    <string name="error_message">Oops! Something went wrong.</string>
+    <string name="empty_results">No result found</string>
+
 </resources>
