@@ -8,7 +8,6 @@
 The project used MVI and Repository design pattern approach. State in app is defined by user's action which is called intent _(not the android Intent class)_ which the ViewModel will get and decide the state to be reflected to the View.
 
 #### Libraries
-<<<<<<< HEAD
 * [Hilt](https://dagger.dev/hilt/) - Dependency injection
 * [Room](https://developer.android.com/jetpack/androidx/releases/room) - Caching mechanism.
 * [Retrofit](https://square.github.io/retrofit/) - API http network requests.
@@ -61,10 +60,3 @@ Lint issues or warnings can be checked by running
   }
 ]
 ```
-=======
-* [Hilt](https://dagger.dev/hilt/) - For dependency injection
-* [Room](https://developer.android.com/jetpack/androidx/releases/room) - Data caching mechanism
-* [Retrofit](https://square.github.io/retrofit/) - API http network requests
-
-*Navigation Component and Recyclerview are implement in branch [navigation-component](https://github.com/roxxydev/android-mvi-demo/tree/navigation-component)*
->>>>>>> 7a705dd... update README
